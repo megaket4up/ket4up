@@ -37,8 +37,8 @@ services:
     <<: *app
     command: rr serve -c .rr.local.yaml
     ports:
-      - '8080:8080/tcp'
-      - '8443:8443/tcp'
+      - "${APP_PORT:-8080}:8080/tcp"
+      - "${APP_PORT:-8443}:8443/tcp"
     healthcheck:
       test: ['CMD-SHELL', 'wget --spider -q "http://127.0.0.1:8082/health?plugin=http&plugin=rpc"']
       interval: 2s
@@ -60,8 +60,6 @@ services:
       POSTGRES_PASSWORD: forge
     volumes:
       - pg-data:/var/lib/postgresql/data:rw
-    ports:
-      - '5432/tcp'
     healthcheck: # Healthcheck docs: <https://docs.docker.com/engine/reference/builder/#healthcheck>
       test: ['CMD-SHELL', 'pg_isready -U forge']
       interval: 2s
@@ -73,8 +71,6 @@ services:
     command: redis-server --requirepass redis_password
     volumes:
       - redis-data:/data:rw
-    ports:
-      - '6379/tcp'
     healthcheck:
       test: ['CMD', 'redis-cli', 'ping']
       interval: 500ms
